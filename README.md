@@ -88,8 +88,8 @@ Zheng Ge, Songtao Liu, Feng Wang, Zeming Li, Jian Sun, "YOLOX: Exceeding YOLO Se
 ## Assumptions / Known limits
 
 ## Onnx model
-
 | T4 Model | Resolutions | GFLOPS | Params[M] | Activation | Link |
+|---|---|---|---|---|---|
 | YOLOX-S | 960x960 | 59.7575 | 8.91725 | SWISH | https://drive.google.com/file/d/1qiUraIEgp45xC55ZhfvOS81e6FdGGOXN/view?usp=drive_link |
 | YOLOX-M | 960x960 | 165.016 | 25.2415 | SWISH | https://drive.google.com/file/d/1zNf02RlBj6mmcUscE_8D4-VnZ1w4-gxt/view?usp=drive_link |
 | YOLOX-X | 960x960 | 632.459 | 98.9011 | SWISH | https://drive.google.com/file/d/1T7Yy2xypSCtNonUmkAILnLtWWE8YzacQ/view?usp=drive_link |
@@ -98,7 +98,9 @@ Zheng Ge, Songtao Liu, Feng Wang, Zeming Li, Jian Sun, "YOLOX: Exceeding YOLO Se
 | YOLOXP-SPlus-Opt-Semseg (V3) | 960x960 | 121.309 | 15.5052 | RELU (RELU6) | https://drive.google.com/file/d/1F5D0fVp7Wm6DUESxHei9GAX9eXlWl-FH/view?usp=drive_link |
 
 V1: Optimized YOLOX-S for efficient inference with INT8 precision on Embedded GPUs and DLAs
+
 V2: Better accuracy YOLOX-SPlus-Opt for cone detection using pseudo label based semi-supervised learning
+
 V3: Multitask YOLOX-SPlus-Opt for detection and segmentation
 
 ## INT8 with Post Traninng Quantization (PTQ)
