@@ -17,7 +17,7 @@ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3")
 find_package(OpenCV REQUIRED)
 
 #detector lib (cuda)
-file(GLOB_RECURSE sources src/common/tensorrt_common.cpp src/yolox/tensorrt_yolox.cpp src/common/simple_profiler.cpp src/yolox/preprocess.cu)
+file(GLOB_RECURSE sources src/tensorrt_common/tensorrt_common.cpp src/tensorrt_common/simple_profiler.cpp src/tensorrt_yolox/tensorrt_yolox.cpp src/tensorrt_yolox/preprocess.cu)
 add_library(detector SHARED ${sources})
 
 target_link_libraries(detector  nvinfer nvinfer_plugin nvparsers nvonnxparser cuda cudart  "stdc++fs")

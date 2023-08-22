@@ -54,6 +54,10 @@ DEFINE_string(rgb, "not-specified",
               "[OPTIONAL] Path to pre-generated calibration table. If flag is not set, a new calib "
               "table <network-type>-<precision>-calibration.table will be generated");
 
+DEFINE_string(cmap, "../data/bdd100k_semseg.csv",
+              "[OPTIONAL] Path to colormap for semantic segmentation"
+              "");
+
 DEFINE_string(names, "bdd100k.names",
               "[OPTIONAL] Path to pre-generated calibration table. If flag is not set, a new calib "
               "table <network-type>-<precision>-calibration.table will be generated");
@@ -262,7 +266,50 @@ get_colormap(void)
   return colormap;
 }
 
-
+std::vector<tensorrt_yolox::Colormap>
+get_seg_colormap(void)
+{
+  std::string filename = FLAGS_cmap;
+  std::vector<tensorrt_yolox::Colormap> seg_cmap;
+  if (filename != "not-specified") {
+    std::vector<std::string> color_list = loadListFromTextFile(filename);    
+    for (int i = 0; i < (int)color_list.size(); i++) {
+      if (i == 0) {
+	//Skip header
+	continue;
+      }
+      std::string colormapString = color_list[i];
+      tensorrt_yolox::Colormap cmap; 
+      std::vector<int> rgb;
+      size_t npos = colormapString.find_first_of(',');      
+      assert(npos != std::string::npos);
+      int id = (int)std::stoi(trim(colormapString.substr(0, npos)));
+      colormapString.erase(0, npos + 1);
+      
+      npos = colormapString.find_first_of(',');
+      assert(npos != std::string::npos);      
+      std::string name = (trim(colormapString.substr(0, npos)));
+      cmap.id = id;
+      cmap.name = name;
+      colormapString.erase(0, npos + 1);
+      while (!colormapString.empty()) {
+	size_t npos = colormapString.find_first_of(',');
+	if (npos != std::string::npos) {
+	  unsigned char c = (unsigned char)std::stoi(trim(colormapString.substr(0, npos)));
+	  cmap.color.push_back(c);
+	  colormapString.erase(0, npos + 1);
+	} else {
+	  unsigned char c = (unsigned char)std::stoi(trim(colormapString));
+	  cmap.color.push_back(c);
+	  break;
+	}      
+      }
+      
+      seg_cmap.push_back(cmap);
+    }
+  }
+  return seg_cmap;
+}
 
 std::vector<std::string>
 get_names(void)

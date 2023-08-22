@@ -1,4 +1,3 @@
-#include <tensorrt_yolox/tensorrt_yolox.hpp>
 #include <memory>
 #include <string>
 #include "yolo_config_parser.h"
@@ -126,6 +125,7 @@ main(int argc, char* argv[])
   const std::string dumpPath = get_dump_path();
   const std::string outputPath = get_output_path();  
   std::vector<std::vector<int>> colormap = get_colormap();
+  std::vector<tensorrt_yolox::Colormap> seg_cmap = get_seg_colormap();
   std::string calibType = get_calib_type();//nvinfer1::CalibrationAlgoType::kMINMAX_CALIBRATION;
   bool prof = get_prof_flg();
   double clip = get_clip_value();
@@ -209,12 +209,37 @@ main(int argc, char* argv[])
 	trt_yolox->doInference(inputs, objects);
       }
       
-      
+      int num_multitask = trt_yolox->getMultitaskNum();
       for (int b = 0; b < batch; b++) {
 	cv::Mat src = getMultiScaleInference() ? inputs[0] : inputs[b];
 	if (rois[b].width !=-1 && rois[b].height != -1) {
 	  cv::rectangle(
 			src, cv::Point(rois[b].x, rois[b].y), cv::Point(rois[b].x+rois[b].width, rois[b].y+rois[b].height), cv::Scalar(255, 255, 255), 1, 8, 0);
+	}
+
+	if (num_multitask) {
+	  for (int m = 0 ; m < num_multitask; m++) {
+	    auto cmask = trt_yolox->getColorizedMask(m, seg_cmap);	    
+	    cv::Mat resized;
+	    if (flg_save) {
+	      fs::path p (filenames[i+b]);
+	      std::string name = p.filename().string();	
+	      std::ostringstream sout;
+	      p = save_path;
+	      p.append("segmentations");
+	      cv::resize(cmask, resized, cv::Size(src.cols, src.rows), 0, 0, cv::INTER_NEAREST);
+	      replaceOtherStr(name, ".jpg", ".png");
+
+	      save_image(resized, p.string(), name);
+	    }      	    
+	    if (!dont_show) {	    
+	      cv::namedWindow("cmask", 0);
+	      cv::imshow("cmask", cmask);
+	      if (cv::waitKey(1) == 'q') break;
+	      cv::resize(cmask, resized, cv::Size(src.cols, src.rows), 0, 0, cv::INTER_NEAREST);	      
+	      cv::addWeighted(inputs[0], 1.0, resized, 0.5, 0.0, src);	      
+	    }	  
+	  }
 	}
 	
 	for (const auto & object : objects[b]) {
@@ -306,6 +331,20 @@ main(int argc, char* argv[])
       }      
       tensorrt_yolox::ObjectArrays objects;
       trt_yolox->doInference({image}, objects);
+
+      int num_multitask = trt_yolox->getMultitaskNum();
+      if (num_multitask) {
+	for (int m = 0 ; m < num_multitask; m++) {
+	  auto cmask = trt_yolox->getColorizedMask(m, seg_cmap);
+	  cv::namedWindow("cmask", 0);
+	  cv::imshow("cmask", cmask);
+	  if (cv::waitKey(1) == 'q') break;
+	  cv::Mat resized;
+	  cv::resize(cmask, resized, cv::Size(image.cols, image.rows), 0, 0, cv::INTER_NEAREST);
+	  cv::addWeighted(image, 1.0, resized, 0.5, 0.0, image);	      
+	      
+	}
+      }
       
       if (!dont_show) { 
 	for (const auto & object : objects[0]) {

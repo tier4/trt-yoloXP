@@ -1,4 +1,4 @@
-# TensorRT YOLOX for Effcient Inference
+# TensorRT YOLOXP for Effcient Multitask Inference
 
 ## Purpose
 
@@ -16,7 +16,13 @@ sudo apt-get install libgflags-dev
 sudo apt-get install libboost-all-dev
 ```
 
-## Building
+## Download models
+
+Download onnx "yoloXP-sPlus-T4-960x960-pseudo-finetune-semseg.onnx" from
+
+https://drive.google.com/drive/folders/1OXpbS3k2rWvCawmBS1pBe7_eHD_RkQoR
+
+## Build sources
 
 ```bash
 git clone git@github.com:tier4/trt-yolox.git
@@ -31,31 +37,18 @@ make -j
 -Build TensoRT engine
 
 ```bash
-./trt-yolox --onnx yolox-tiny.onnx --precision int8 --c 8 --calib MinMax --calibration_images ../calibration_images.txt
+./trt-yolox --onnx yoloXP-sPlus-T4-960x960-pseudo-finetune-semseg.onnx  --precision int8 --calib Entropy --clip 6.0
 ```
 
 -Infer from a Video
 
 ```bash
-./trt-yolox --onnx yolox-tiny.onnx --precision int8 --c 8 --calib MinMax --calibration_images ../calibration_images.txt [--cuda] [--rgb ../data/t4.colormap] --v VIDEO_PATH
+./trt-yolox --onnx yoloXP-sPlus-T4-960x960-pseudo-finetune-semseg.onnx  --precision int8 --calib Entropy --clip 6.0 --c 8 --rgb ../data/t4.colormap --names ../data/t4.names --cmap ../data/bdd100k_semseg.csv [--cuda] --v VIDEO_PATH
 ```
 
 -Infer from images in a directory
-
 ```bash
-./trt-yolox --onnx yolox-tiny.onnx --precision int8 --c 8 --calib MinMax --calibration_images ../calibration_images.txt [--cuda] [--rgb ../data/t4.colormap] --d DIRECTORY_PATH
-```
-
--Infer using Custom model from images in a directory
-
-```bash
-./trt-yolox --onnx ../onnx/yolox-dla-s-elan-BDD100K-640x640.onnx --c 10 --precision int8  --rgb ../data/bdd100k.colormap --calibration_images ../calibration_images.txt --calib MinMax --cuda --d ../test/ 
-```
-
--Multi-scale Inference with batching using Custom model
-
-```bash
-./trt-yolox --onnx ../onnx/yolox-dla-s-elan-BDD100K-416x416-relu6-dynamic-batch.onnx --c 10 --rgb ../data/bdd100k.colormap  --precision int8 --calib Entropy --clip 6.0 --batch_size 6 --multi-scale --random_crop --cuda  --d ../test
+./trt-yolox --onnx yoloXP-sPlus-T4-960x960-pseudo-finetune-semseg.onnx  --precision int8 --calib Entropy --clip 6.0 --c 8 --rgb ../data/t4.colormap --names ../data/t4.names --cmap ../data/bdd100k_semseg.csv [--cuda] --d DIRECTORY_PATH
 ```
 
 
@@ -76,6 +69,8 @@ Zheng Ge, Songtao Liu, Feng Wang, Zeming Li, Jian Sun, "YOLOX: Exceeding YOLO Se
 
 --rgb=colormap colormap for bbox (optional)
 
+--cmap=colormap colormap for semantic segmentation
+
 --cuda=cuda preprocess (optional)
 
 --first=true partial quantization that first layer is held in fp16 (optional)
@@ -93,6 +88,18 @@ Zheng Ge, Songtao Liu, Feng Wang, Zeming Li, Jian Sun, "YOLOX: Exceeding YOLO Se
 ## Assumptions / Known limits
 
 ## Onnx model
+
+| T4 Model | Resolutions | GFLOPS | Params[M] | Activation | Link |
+| YOLOX-S | 960x960 | 59.7575 | 8.91725 | SWISH | https://drive.google.com/file/d/1qiUraIEgp45xC55ZhfvOS81e6FdGGOXN/view?usp=drive_link |
+| YOLOX-M | 960x960 | 165.016 | 25.2415 | SWISH | https://drive.google.com/file/d/1zNf02RlBj6mmcUscE_8D4-VnZ1w4-gxt/view?usp=drive_link |
+| YOLOX-X | 960x960 | 632.459 | 98.9011 | SWISH | https://drive.google.com/file/d/1T7Yy2xypSCtNonUmkAILnLtWWE8YzacQ/view?usp=drive_link |
+| YOLOX-SPlus-Opt (V1) | 960x960 | 102.147 | 14.8016 | RELU (RELU6) | https://drive.google.com/file/d/1dp_luXzZhBr4kC4R65rl6OLNK95Dro_k/view?usp=drive_link |
+| YOLOX-SPlus-Opt (V2) | 960x960 | 102.147 | 14.8016 | RELU (RELU6) | https://drive.google.com/file/d/1F5D0fVp7Wm6DUESxHei9GAX9eXlWl-FH/view?usp=drive_link |
+| YOLOXP-SPlus-Opt-Semseg (V3) | 960x960 | 121.309 | 15.5052 | RELU (RELU6) | https://drive.google.com/file/d/1F5D0fVp7Wm6DUESxHei9GAX9eXlWl-FH/view?usp=drive_link |
+
+V1: Optimized YOLOX-S for efficient inference with INT8 precision on Embedded GPUs and DLAs
+V2: Better accuracy YOLOX-SPlus-Opt for cone detection using pseudo label based semi-supervised learning
+V3: Multitask YOLOX-SPlus-Opt for detection and segmentation
 
 ## INT8 with Post Traninng Quantization (PTQ)
 

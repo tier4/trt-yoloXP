@@ -2,6 +2,8 @@
 #include <string>
 #include <gflags/gflags.h>
 #include <NvInfer.h>
+#include <map>
+#include <tensorrt_yolox/tensorrt_yolox.hpp>
 
 typedef struct _window_info{
   unsigned int x;
@@ -102,3 +104,6 @@ bool getRandomCrop();
 
 std::string
 get_output_path(void);
+
+std::vector<tensorrt_yolox::Colormap>
+get_seg_colormap(void);
