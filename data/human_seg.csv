@@ -1,0 +1,4 @@
+id,name,r,g,b
+0,none,0,0,0
+1,person,255,0,0
+2,ground,0,255,0

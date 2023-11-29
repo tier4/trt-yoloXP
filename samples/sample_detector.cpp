@@ -321,7 +321,7 @@ main(int argc, char* argv[])
       cv::resizeWindow(window_name, window_info.w, window_info.h);
     }
     cv::moveWindow(window_name, window_info.x, window_info.y);
-    
+    int frame_count = 0;
     while (1) {
       video >> image;
       if (image.empty() == true) break;
@@ -336,13 +336,42 @@ main(int argc, char* argv[])
       if (num_multitask) {
 	for (int m = 0 ; m < num_multitask; m++) {
 	  auto cmask = trt_yolox->getColorizedMask(m, seg_cmap);
+	  /*
+	  auto gray = trt_yolox->getSpecifiedMask(m, 2);
+	  cv::Mat blur;
+	  cv::resize(gray, gray, cv::Size(image.cols, image.rows), 0, 0, cv::INTER_NEAREST);	  
+	  cv::blur(gray, blur, cv::Size(3,3));	  
+	  cv::Mat canny;
+	  int thresh = 100;
+	  cv::Canny(blur, canny, thresh, thresh * 2);
+	  cv::Mat canny2 = canny.clone();
+	  std::vector<std::vector<cv::Point> > contours;
+	  std::vector<cv::Vec4i> hierarchy;
+	  cv::findContours(canny, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+
+	  std::cout << contours.size() << std::endl; //=> 36
+	  std::cout << contours[contours.size() - 1][0] << std::endl; //=> [154, 10]
+	  cv::Mat drawing = cv::Mat::zeros(canny.size(), CV_8UC3);
+	  cv::imshow("canny", canny);
+	  */
+	  
 	  cv::namedWindow("cmask", 0);
 	  cv::imshow("cmask", cmask);
 	  if (cv::waitKey(1) == 'q') break;
 	  cv::Mat resized;
 	  cv::resize(cmask, resized, cv::Size(image.cols, image.rows), 0, 0, cv::INTER_NEAREST);
 	  cv::addWeighted(image, 1.0, resized, 0.5, 0.0, image);	      
-	      
+	  /*
+	  for( size_t i = 0; i< contours.size(); i++ ) {
+	    double area = cv::contourArea(contours.at(i));
+	    if (area > 20) { 
+	      //printf("%f\n",area);
+	      cv::Scalar color = cv::Scalar(255, 0, 255);
+	      cv::drawContours(image, contours, (int)i, color);
+	    }
+	  }
+	  cv::imshow("drawing", drawing);	    
+	  */
 	}
       }
       
@@ -367,8 +396,18 @@ main(int argc, char* argv[])
 	  
 	}	
 	//      cv::imwrite(output_image_path, image);
+	//cv::resize(image, image, cv::Size(image.cols/2, image.rows/2), 0, 0, cv::INTER_NEAREST);
 	cv::imshow(window_name, image);
 	//cv::waitKey(0);
+	if (flg_save) {
+	  fs::path p;
+	  std::ostringstream sout;
+	  sout << std::setfill('0') << std::setw(6) << frame_count++;	  
+	  std::string name = "frame_" + sout.str() + ".jpg";	  
+	  p = save_path;
+	  p.append("detections");
+	  save_image(image, p.string(), name);
+	}      	
 	if (cv::waitKey(1) == 'q') break;	
       }      
     } 

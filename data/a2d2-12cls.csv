@@ -1,0 +1,13 @@
+id,name,r,g,b
+0,others,0,0,0
+1,buidling,70,70,70
+2,obstacle,0,153,0
+3,traffic_light,250,170,30
+4,traffic_sign,220,220,0
+5,person,220,20,60
+6,car,0,0,142
+7,motorcycle,0,0,230
+8,road,128,64,128
+9,roadPainting,255,255,255
+10,vegetation,107,142,35
+11,sky,70,130,180

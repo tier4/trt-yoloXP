@@ -1186,4 +1186,22 @@ cv::Mat TrtYoloX::getColorizedMask(int index, std::vector<Colormap> &colormap)
   return cmask;
 }
 
+cv::Mat TrtYoloX::getSpecifiedMask(int index, unsigned char specified)
+{
+  cv::Mat mask;
+  mask = segmentation_masks_[index];
+  int width = mask.cols;
+  int height = mask.rows;
+  cv::Mat ret = cv::Mat::zeros(height, width, CV_8UC1);      
+  for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++) {
+      unsigned char id = mask.at<unsigned char>(y, x);
+      if (id == specified) {
+	ret.at<unsigned char>(y, x) = 255;
+      }
+    }
+  }
+  return ret;
+}
+
 }  // namespace tensorrt_yolox

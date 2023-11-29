@@ -148,7 +148,16 @@ public:
    * @param[in] index multitask index
    * @param[in] colormap colormap for masks
    */  
-  cv::Mat getColorizedMask(int index, std::vector<Colormap> & colormap);  
+  cv::Mat getColorizedMask(int index, std::vector<Colormap> & colormap);
+
+  /**
+   * @brief get a specified mask from id
+   * @param[out] specified grayscale mask
+   * @param[in] index multitask index
+   * @param[in] specified specified index
+   */  
+  cv::Mat getSpecifiedMask(int index, unsigned char specified);    
+
   
 private:
   /**
