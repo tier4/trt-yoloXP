@@ -24,6 +24,9 @@ std::string format(const std::string& fmt, Args ... args )
   return std::string(&buf[0], &buf[0] + len);
 }
 
+template<class T> bool contain(const std::string& s, const T& v) {
+  return s.find(v) != std::string::npos;
+}
 
 std::string replaceOtherStr(std::string &replacedStr, std::string from, std::string to) {
   const unsigned int pos = replacedStr.find(from);
@@ -222,14 +225,16 @@ main(int argc, char* argv[])
 	    auto cmask = trt_yolox->getColorizedMask(m, seg_cmap);	    
 	    cv::Mat resized;
 	    if (flg_save) {
+
 	      fs::path p (filenames[i+b]);
-	      std::string name = p.filename().string();	
+	      std::string name = p.filename().string();
 	      std::ostringstream sout;
 	      p = save_path;
 	      p.append("segmentations");
 	      cv::resize(cmask, resized, cv::Size(src.cols, src.rows), 0, 0, cv::INTER_NEAREST);
-	      replaceOtherStr(name, ".jpg", ".png");
-
+	      if (!contain(name, ".png")) {
+		replaceOtherStr(name, ".jpg", ".png");
+	      }
 	      save_image(resized, p.string(), name);
 	    }      	    
 	    if (!dont_show) {	    
@@ -360,7 +365,22 @@ main(int argc, char* argv[])
 	  if (cv::waitKey(1) == 'q') break;
 	  cv::Mat resized;
 	  cv::resize(cmask, resized, cv::Size(image.cols, image.rows), 0, 0, cv::INTER_NEAREST);
-	  cv::addWeighted(image, 1.0, resized, 0.5, 0.0, image);	      
+	  cv::addWeighted(image, 1.0, resized, 0.5, 0.0, image);
+	  if (num_multitask) {
+	    for (int m = 0 ; m < num_multitask; m++) {
+	      if (flg_save) {
+		fs::path p;
+		std::ostringstream sout;
+		sout << std::setfill('0') << std::setw(6) << frame_count++;	  
+		std::string name = "frame_" + sout.str() + ".jpg";	  		
+		p = save_path;
+		p.append("segmentations");
+		replaceOtherStr(name, ".jpg", ".png");
+		
+		save_image(resized, p.string(), name);
+	      }
+	    }
+	  }
 	  /*
 	  for( size_t i = 0; i< contours.size(); i++ ) {
 	    double area = cv::contourArea(contours.at(i));
@@ -399,7 +419,7 @@ main(int argc, char* argv[])
 	//cv::resize(image, image, cv::Size(image.cols/2, image.rows/2), 0, 0, cv::INTER_NEAREST);
 	cv::imshow(window_name, image);
 	//cv::waitKey(0);
-	if (flg_save) {
+	if (flg_save) {	  
 	  fs::path p;
 	  std::ostringstream sout;
 	  sout << std::setfill('0') << std::setw(6) << frame_count++;	  
