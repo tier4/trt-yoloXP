@@ -48,15 +48,29 @@ sudo apt-get install libboost-all-dev
 
 ## Download models
 
-Download onnx "yoloXP-sPlus-T4-960x960-pseudo-finetune-semseg.onnx" from
+### 1. High Efficient Object Detection (YOLOX-S+-Opt)
 
-https://drive.google.com/drive/folders/1OXpbS3k2rWvCawmBS1pBe7_eHD_RkQoR
+ ```bash
+wget https://awf.ml.dev.web.auto/perception/models/object_detection_yolox_s/v1/yolox-sPlus-T4-960x960-pseudo-finetune.onnx
+```
+
+### 2. High Efficient Object Detection and Lane Segmentation (YOLOX-S+-Opt-LaneSegmentation)
+
+The multi-task capability of YOLOXP has been extended to include Lane Segmentation, offering a comprehensive solution for advanced object detection and environmental understanding. **Currently, access to models supporting Lane Segmentation is exclusive to Co-MLOps partners.**
+
+If you're interested in exploring our multi-task model with Lane Segmentation, we invite you to learn more about our Co-MLOps partnership. This initiative aims to share large-scale data and develop AI for autonomous driving, fostering innovation and collaboration in the field.
+
+For more information and to see how you can get involved, please visit:
+
+[https://medium.com/tier-iv-tech-blog/tier-iv-launches-co-mlops-project-to-share-large-scale-data-and-develop-ai-for-autonomous-driving-a30c1d272d5d](https://medium.com/tier-iv-tech-blog/tier-iv-launches-co-mlops-project-to-share-large-scale-data-and-develop-ai-for-autonomous-driving-a30c1d272d5d)
+
+We're excited to collaborate with partners who are equally passionate about advancing autonomous driving technologies and look forward to expanding the reach and capabilities of YOLOXP through these partnerships.
 
 ## Build sources
 
 ```bash
-git clone git@github.com:tier4/trt-yolox.git
-cd trt-yolo
+git clone git@github.com:tier4/trt-yoloXP.git
+cd trt-yoloXP
 cd build/
 cmake ..
 make -j
@@ -67,18 +81,18 @@ make -j
 -Build TensoRT engine
 
 ```bash
-./trt-yolox --onnx yoloXP-sPlus-T4-960x960-pseudo-finetune-semseg.onnx  --precision int8 --calib Entropy --clip 6.0
+./trt-yoloxp --onnx ../yolox-sPlus-T4-960x960-pseudo-finetune.onnx  --precision int8 --calib Entropy --clip 6.0
 ```
 
 -Infer from a Video
 
 ```bash
-./trt-yolox --onnx yoloXP-sPlus-T4-960x960-pseudo-finetune-semseg.onnx  --precision int8 --calib Entropy --clip 6.0 --c 8 --rgb ../data/t4.colormap --names ../data/t4.names --cmap ../data/bdd100k_semseg.csv [--cuda] --v VIDEO_PATH
+./trt-yoloxp --onnx ../yolox-sPlus-T4-960x960-pseudo-finetune.onnx  --precision int8 --calib Entropy --clip 6.0 --c 8 --rgb ../data/t4.colormap --names ../data/t4.names --cmap  [--cuda] [--dla DLA_NUMBER] --v VIDEO_PATH
 ```
 
 -Infer from images in a directory
 ```bash
-./trt-yolox --onnx yoloXP-sPlus-T4-960x960-pseudo-finetune-semseg.onnx  --precision int8 --calib Entropy --clip 6.0 --c 8 --rgb ../data/t4.colormap --names ../data/t4.names --cmap ../data/bdd100k_semseg.csv [--cuda] --d DIRECTORY_PATH
+./trt-yoloxp --onnx ../yolox-sPlus-T4-960x960-pseudo-finetune.onnx  --precision int8 --calib Entropy --clip 6.0 --c 8 --rgb ../data/t4.colormap --names ../data/t4.names --cmap  [--cuda]  [--dla DLA_NUMBER] --d DIRECTORY_PATH
 ```
 
 
@@ -86,6 +100,7 @@ make -j
 
 Zheng Ge, Songtao Liu, Feng Wang, Zeming Li, Jian Sun, "YOLOX: Exceeding YOLO Series in 2021", arXiv preprint arXiv:2107.08430, 2021 [[ref](https://arxiv.org/abs/2107.08430)]
 
+Dan Umeda, "Optimization for Efficient Inference in Edge AI", AI Computing for Autonomous Driving in TIER IV Meetup, 2023 [[ref](https://www.docswell.com/s/TIER_IV/KGX2L8-2023-07-24-120048)]
 
 ## Parameters
 
@@ -114,10 +129,6 @@ Zheng Ge, Songtao Liu, Feng Wang, Zeming Li, Jian Sun, "YOLOX: Exceeding YOLO Se
 --multi-scale multi-scale inference with rois (optional)
 
 --random_crop random crop inference (optional)
-
-## Assumptions / Known limits
-
-## Onnx model
 
 
 ## INT8 with Post Traninng Quantization (PTQ)
