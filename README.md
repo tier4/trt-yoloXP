@@ -46,6 +46,16 @@ sudo apt-get install libgflags-dev
 sudo apt-get install libboost-all-dev
 ```
 
+## Build sources
+
+```bash
+git clone git@github.com:tier4/trt-yoloXP.git
+cd trt-yoloXP
+cd build/
+cmake ..
+make -j
+```
+
 ## Download models
 
 ### 1. High Efficient Object Detection (YOLOX-S+-Opt)
@@ -66,33 +76,25 @@ For more information and to see how you can get involved, please visit:
 
 We're excited to collaborate with partners who are equally passionate about advancing autonomous driving technologies and look forward to expanding the reach and capabilities of YOLOXP through these partnerships.
 
-## Build sources
 
-```bash
-git clone git@github.com:tier4/trt-yoloXP.git
-cd trt-yoloXP
-cd build/
-cmake ..
-make -j
-```
 
 ## Start inference
 
 -Build TensoRT engine
 
 ```bash
-./trt-yoloxp --onnx ../yolox-sPlus-T4-960x960-pseudo-finetune.onnx  --precision int8 --calib Entropy --clip 6.0
+./trt-yoloxp --onnx yolox-sPlus-T4-960x960-pseudo-finetune.onnx  --precision int8 --calib Entropy --clip 6.0
 ```
 
 -Infer from a Video
 
 ```bash
-./trt-yoloxp --onnx ../yolox-sPlus-T4-960x960-pseudo-finetune.onnx  --precision int8 --calib Entropy --clip 6.0 --c 8 --rgb ../data/t4.colormap --names ../data/t4.names --cmap  [--cuda] [--dla DLA_NUMBER] --v VIDEO_PATH
+./trt-yoloxp --onnx yolox-sPlus-T4-960x960-pseudo-finetune.onnx  --precision int8 --calib Entropy --clip 6.0 --c 8 --rgb ../data/t4.colormap --names ../data/t4.names --cmap  [--cuda] [--dla DLA_NUMBER] --v VIDEO_PATH
 ```
 
 -Infer from images in a directory
 ```bash
-./trt-yoloxp --onnx ../yolox-sPlus-T4-960x960-pseudo-finetune.onnx  --precision int8 --calib Entropy --clip 6.0 --c 8 --rgb ../data/t4.colormap --names ../data/t4.names --cmap  [--cuda]  [--dla DLA_NUMBER] --d DIRECTORY_PATH
+./trt-yoloxp --onnx yolox-sPlus-T4-960x960-pseudo-finetune.onnx  --precision int8 --calib Entropy --clip 6.0 --c 8 --rgb ../data/t4.colormap --names ../data/t4.names --cmap  [--cuda]  [--dla DLA_NUMBER] --d DIRECTORY_PATH
 ```
 
 
