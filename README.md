@@ -2,9 +2,39 @@
 
 ## Purpose
 
-This package detects arbitary objects using TensorRT for efficient and faster inference.
+This package detects and segments arbitary objects using TensorRT for efficient and faster inference.
 Specifically, this supports multi-precision and multi-devices inference for efficient inference on embedded platform.
-Moreover, we support pre-process for YOLOX in GPU.
+Moreover, we support pre-process for YOLOXP in GPU.
+
+
+https://github.com/tier4/trt-yoloXP/assets/127905436/b28bd051-b853-4a28-b1e2-9f9a17e2d066
+
+
+
+## Features
+
+### 1. GPU-Accelerated Preprocessing
+
+By offloading preprocessing tasks to the GPU, YOLOXP achieves higher overall throughput, significantly reducing latency and improving the efficiency of the detection pipeline.
+![image](https://github.com/tier4/trt-yoloXP/assets/127905436/722861b2-622e-4189-9866-fd63a7ed27fd)
+
+
+### 2. High Efficiency on Embedded GPUs
+
+TRT-YOLOXP leverages profiling information from Xavier and Orin GPUs to utilize highly efficient operators, optimizing the model for performance. By exclusively using operators supported by the Deep Learning Accelerator (DLA), TRT-YOLOXP ensures seamless execution on DLA-enabled devices, maximizing efficiency.
+
+![image](https://github.com/tier4/trt-yoloXP/assets/127905436/a6228a3d-e266-4a22-a3e5-6b31c1718d83)
+
+### 3. Quantization-Aware Model
+
+Unlike the original YOLOX, which experiences significant accuracy degradation with TensorRT Entropy calibration quantization, TRT-YOLOXP employs quantization-friendly activations using RELU6. This approach maintains high quantization accuracy on both GPUs and DLAs, preventing critical loss in precision during quantization.
+![image](https://github.com/tier4/trt-yoloXP/assets/127905436/21d76493-a46d-4b11-864a-8e5e0dfc195b)
+
+### 4. Multi-Task Model
+
+TRT-YOLOXP supports multiple tasks within a single model, including object detection and semantic segmentation. By reusing the backbone for various tasks, it efficiently delivers multiple outputs, extending its applicability and optimizing resource use.
+![image](https://github.com/tier4/trt-yoloXP/assets/127905436/8f3e14c5-680e-4d90-9ec0-fadab9c449e0)
+
 
 ## Setup
 
@@ -88,20 +118,7 @@ Zheng Ge, Songtao Liu, Feng Wang, Zeming Li, Jian Sun, "YOLOX: Exceeding YOLO Se
 ## Assumptions / Known limits
 
 ## Onnx model
-| T4 Model | Resolutions | GFLOPS | Params[M] | Activation | Link |
-|---|---|---|---|---|---|
-| YOLOX-S | 960x960 | 59.7575 | 8.91725 | SWISH | https://drive.google.com/file/d/1qiUraIEgp45xC55ZhfvOS81e6FdGGOXN/view?usp=drive_link |
-| YOLOX-M | 960x960 | 165.016 | 25.2415 | SWISH | https://drive.google.com/file/d/1zNf02RlBj6mmcUscE_8D4-VnZ1w4-gxt/view?usp=drive_link |
-| YOLOX-X | 960x960 | 632.459 | 98.9011 | SWISH | https://drive.google.com/file/d/1T7Yy2xypSCtNonUmkAILnLtWWE8YzacQ/view?usp=drive_link |
-| YOLOX-SPlus-Opt (V1) | 960x960 | 102.147 | 14.8016 | RELU (RELU6) | https://drive.google.com/file/d/1dp_luXzZhBr4kC4R65rl6OLNK95Dro_k/view?usp=drive_link |
-| YOLOX-SPlus-Opt (V2) | 960x960 | 102.147 | 14.8016 | RELU (RELU6) | https://drive.google.com/file/d/1F5D0fVp7Wm6DUESxHei9GAX9eXlWl-FH/view?usp=drive_link |
-| YOLOXP-SPlus-Opt-Semseg (V3) | 960x960 | 121.309 | 15.5052 | RELU (RELU6) | https://drive.google.com/file/d/1F5D0fVp7Wm6DUESxHei9GAX9eXlWl-FH/view?usp=drive_link |
 
-V1: Optimized YOLOX-S for efficient inference with INT8 precision on Embedded GPUs and DLAs
-
-V2: Better accuracy YOLOX-SPlus-Opt for cone detection using pseudo label based semi-supervised learning
-
-V3: Multitask YOLOX-SPlus-Opt for detection and segmentation
 
 ## INT8 with Post Traninng Quantization (PTQ)
 
@@ -126,7 +143,7 @@ However, DLA don't support some operation including slice in stem and  max pooli
 This causes GPU fallback and drop inference performance.
 To efficient inference on DLAs, you need to modify your YOLOX models.
 Moreover, DLAs support only EntropyV2 quantization and you can get accuracy drop in INT8 on DLAs.
-For best accuracy on DLAs, you run YOLOX with FP16 (half) precision.
+For best accuracy on DLAs, we recommand to use YOLOXP-Opt with RELU6 which is quantization-friendly activations.
 
 ### Todo
 
