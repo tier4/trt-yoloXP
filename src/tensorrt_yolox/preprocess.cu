@@ -440,16 +440,6 @@ void resize_bilinear_letterbox_nhwc_to_nchw32_batch_gpu(
 
   resize_bilinear_letterbox_nhwc_to_nchw32_batch_kernel<<<cuda_gridsize(N), block, 0, stream>>>(
     N, dst, src, d_h, d_w, s_h, s_w, 1.0 / scale, r_h, r_w, norm, batch);
-  /*
-  int b
-  for (b = 0; b < batch; b++) {
-    int index_dst = b * d_w * d_h * d_c;
-    int index_src = b * s_w * s_h * s_c;
-    resize_bilinear_letterbox_nhwc_to_nchw32_kernel<<<cuda_gridsize(N), BLOCK, 0, stream>>>(N,
-  &dst[index_dst], &src[index_src], d_h, d_w, s_h, s_w, 1.0/scale, r_h, r_w, norm
-                                                                                       );
-  }
-  */
 }
 
 __global__ void crop_resize_bilinear_letterbox_nhwc_to_nchw32_batch_kernel(

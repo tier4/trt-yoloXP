@@ -30,9 +30,6 @@ DEFINE_string(calibration_table_path, "not-specified",
 
 DEFINE_string(precision, "FP32",
               "[OPTIONAL] Inference precision. Choose from kFLOAT, kHALF and kINT8.");
-DEFINE_string(deviceType, "kGPU",
-              "[OPTIONAL] The device that this layer/network will execute on. Choose from kGPU and kDLA(only for kHALF).");
-
 
 DEFINE_string(calibration_images, "calibration_images.txt",
              "[OPTIONAL] Text file containing absolute paths or filenames of calibration images. "
@@ -51,18 +48,17 @@ DEFINE_bool(prof, false,
             "[OPTIONAL] Flag to profile layer by layer");
 
 DEFINE_string(rgb, "not-specified",
-              "[OPTIONAL] Path to pre-generated calibration table. If flag is not set, a new calib "
-              "table <network-type>-<precision>-calibration.table will be generated");
+              "[OPTIONAL] Path to colormap for detections");
 
 DEFINE_string(cmap, "../data/bdd100k_semseg.csv",
               "[OPTIONAL] Path to colormap for semantic segmentation"
               "");
 
-DEFINE_string(names, "bdd100k.names",
+DEFINE_string(names, "../data/t4.names",
               "[OPTIONAL] Path to pre-generated calibration table. If flag is not set, a new calib "
               "table <network-type>-<precision>-calibration.table will be generated");
 
-DEFINE_double(thresh, 0.3, "[OPTIONAL] thresh");
+DEFINE_double(thresh, 0.2, "[OPTIONAL] thresh");
 
 
 DEFINE_double(scale, 1.0, "[OPTIONAL] scale");
@@ -80,7 +76,7 @@ DEFINE_string(dump, "not-specified",
               "[OPTIONAL] Path to dump predictions for mAP calculation");
 
 DEFINE_string(output, "not-specified",
-              "[OPTIONAL] Path to dump outputs for psedo labeling");
+              "[OPTIONAL] Path to dump outputs for pseudo labeling");
 
 DEFINE_string(calib, "MinMax",
               "[OPTIONAL] Calibration Type");

@@ -1,0 +1,4 @@
+id,name,r,g,b
+0,others,0,0,0
+1,solid,0,0,255
+2,dash,0,255,0

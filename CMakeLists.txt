@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1) 
-project(trt-yolox VERSION 1.0)            
+project(trt-yoloxp VERSION 1.0)            
 enable_language(CUDA)
 
 set(CMAKE_CXX_COMPILIER "/usr/bin/g++")
@@ -24,10 +24,10 @@ target_link_libraries(detector  nvinfer nvinfer_plugin nvparsers nvonnxparser cu
 target_include_directories(detector PRIVATE extra/ modules/ ${OpenCV_INCLUDE_DIRS} ${CUDA_TOOLKIT_ROOT_DIR}/include )
 
 
-add_executable(trt-yolox samples/sample_detector.cpp samples/yolo_config_parser.cpp ${sources})
+add_executable(trt-yoloxp samples/sample_detector.cpp samples/yolo_config_parser.cpp ${sources})
 
-target_include_directories(trt-yolox PRIVATE include)
-target_link_libraries(trt-yolox  ${OpenCV_LIBS} nvinfer nvinfer_plugin nvparsers nvonnxparser cuda cudart gflags boost_system boost_filesystem "stdc++fs" "stdc++")
+target_include_directories(trt-yoloxp PRIVATE include)
+target_link_libraries(trt-yoloxp  ${OpenCV_LIBS} nvinfer nvinfer_plugin nvparsers nvonnxparser cuda cudart gflags boost_system boost_filesystem "stdc++fs" "stdc++")
 
 
 
